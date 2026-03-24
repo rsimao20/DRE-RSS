@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 
 RSS_URL = "https://files.diariodarepublica.pt/rss/serie2&parte=l-html.xml"
-KEYWORDS = ["hospital", "hospitais", "saude", "saúde"]
+KEYWORDS = ["low-code", "low code", "uipath"]
 resultados = []
 
 print("A pesquisar concursos com OutSystems no DRE...")
