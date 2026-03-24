@@ -1,0 +1,29 @@
+name: Pesquisar OutSystems no DRE
+
+on:
+  workflow_dispatch:
+    # Corre apenas quando tu clicares "Run workflow"
+
+jobs:
+  pesquisar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependências
+        run: pip install feedparser requests beautifulsoup4
+
+      - name: Correr filtro OutSystems
+        run: python scripts/filtrar_outsystems.py
+
+      - name: Guardar resultados
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-outsystems
+          path: data/outsystems_resultados.json
