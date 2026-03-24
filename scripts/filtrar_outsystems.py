@@ -31,4 +31,9 @@ for entry in feed.entries:
 print(f"\nTotal encontrado: {len(resultados)}")
 os.makedirs('data', exist_ok=True)
 with open('data/outsystems_resultados.json', 'w', encoding='utf-8') as f:
-    json.dump({"data_pesquisa": datetime.now().isoformat(), "total": len(resultados), "resultados": resultad
+    dados = {
+        "data_pesquisa": datetime.now().isoformat(),
+        "total": len(resultados),
+        "resultados": resultados
+    }
+    json.dump(dados, f, ensure_ascii=False, indent=2)
