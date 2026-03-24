@@ -1,30 +1,31 @@
 import requests
 import json
 import os
-from datetime import datetime
 import re
+from datetime import datetime
 
 KEYWORDS = ["outsystems", "low-code", "low code", "uipath"]
 
 ENDPOINT = "https://diariodarepublica.pt/dr/screenservices/dr/Pesquisas/PesquisaResultado/DataActionGetPesquisas"
 
-HEADERS = {
-    "Content-Type": "application/json",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-}
+HEADERS_GET = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+HEADERS_POST = {"Content-Type": "application/json", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 
 def get_version_info():
-    """Busca o moduleVersion e apiVersion actuais do site do DRE"""
-    resp = requests.get("https://diariodarepublica.pt/dr/pesquisa", headers={"User-Agent": HEADERS["User-Agent"]})
-    module = re.search(r'"moduleVersion":"([^"]+)"', resp.text)
-    api = re.search(r'"apiVersion":"([^"]+)"', resp.text)
-    if module and api:
-        return {"moduleVersion": module.group(1), "apiVersion": api.group(1)}
-    return {"moduleVersion": "", "apiVersion": ""}
+    # Obter moduleVersion
+    r1 = requests.get("https://diariodarepublica.pt/dr/moduleservices/moduleversioninfo", params={str(int(__import__('time').time()*1000)): ""}, headers=HEADERS_GET, timeout=15)
+    module_version = r1.json().get("versionToken", "")
+
+    # Obter apiVersion a partir da página principal
+    r2 = requests.get("https://diariodarepublica.pt/dr/pesquisa", headers=HEADERS_GET, timeout=15)
+    match = re.search(r'moduleinfo\?([^"\']+)', r2.text)
+    api_version = match.group(1) if match else module_version
+
+    return {"moduleVersion": module_version, "apiVersion": api_version}
 
 print("A obter versao do DRE...")
 version_info = get_version_info()
-print(f"moduleVersion: {version_info['moduleVersion']}")
+print(f"moduleVersion: {version_info['moduleVersion'][:20]}...")
 
 todos_resultados = []
 
@@ -70,10 +71,10 @@ for keyword in KEYWORDS:
             }
         }
 
-        resp = requests.post(ENDPOINT, headers=HEADERS, json=payload, timeout=30)
-        
+        resp = requests.post(ENDPOINT, headers=HEADERS_POST, json=payload, timeout=30)
+
         if resp.status_code != 200 or not resp.text.strip():
-            print(f"  Erro na resposta: {resp.status_code}")
+            print(f"  Erro: {resp.status_code}")
             break
 
         data = resp.json()
@@ -81,7 +82,7 @@ for keyword in KEYWORDS:
         total = data.get("data", {}).get("TotalResultados", 0)
 
         if not resultados:
-            print(f"  Nenhum resultado para '{keyword}'")
+            print(f"  Nenhum resultado activo para '{keyword}'")
             break
 
         for r in resultados:
@@ -90,7 +91,7 @@ for keyword in KEYWORDS:
                 "titulo": r.get("Titulo", ""),
                 "sumario": r.get("Sumario", ""),
                 "data_publicacao": r.get("DataPublicacao", ""),
-                "link": r.get("LinkDetalhe", ""),
+                "link": "https://diariodarepublica.pt" + r.get("LinkDetalhe", ""),
                 "emissor": r.get("Emissor", ""),
                 "em_vigor": r.get("EmVigor", False)
             })
