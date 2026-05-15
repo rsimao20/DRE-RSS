@@ -1,7 +1,8 @@
 name: Pesquisar OutSystems no DRE
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '6 15 * * *'  # 6 minutos, 15 horas (UTC)
     # Corre apenas quando tu clicares "Run workflow"
 
 jobs:
