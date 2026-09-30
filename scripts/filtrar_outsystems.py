@@ -12,7 +12,7 @@ RSS_URL = "https://files.diariodarepublica.pt/rss/serie2&parte=l-html.xml"
 KEYWORDS = ["OutSystems", "outsystems", "low-code", "out systems", "UiPath", "uipath", "ui path"]
 
 EMAIL_REMETENTE = "rodrigo.simao@fortrevo.com"
-EMAIL_DESTINATARIOS = ["rodrigo.simao@fortrevo.com", "olga.duarte@fortrevo.com", "sales@fortrevo.com"]
+EMAIL_DESTINATARIOS = ["simao2002rodrigo@gmail.com", "olga.duarte@fortrevo.com", "sales@fortrevo.com"]
 GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
 
 def enviar_email(resultados):
@@ -85,11 +85,6 @@ os.makedirs('data', exist_ok=True)
 with open('data/outsystems_resultados.json', 'w', encoding='utf-8') as f:
     json.dump({"data_pesquisa": datetime.now().isoformat(), "total": len(resultados), "resultados": resultados}, f, ensure_ascii=False, indent=2)
 print("Resultados guardados em data/outsystems_resultados.json")
-
-# TESTE: simula um resultado para testar o email
-# APAGAR depois de testar
-if not resultados:
-    resultados = [{"titulo": "Concurso Teste UiPath", "link": "https://www.base.gov.pt/teste", "data": "2026-09-30", "resumo": "Teste de envio de email com concurso simulado"}]
 
 if resultados:
     print(f"\n{len(resultados)} concurso(s) encontrado(s) - a enviar email...")
