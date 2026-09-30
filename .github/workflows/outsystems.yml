@@ -2,17 +2,14 @@ name: Pesquisar OutSystems no DRE
 
 on:
   schedule:
-    # 10:00 UTC = 11:00 de Portugal Continental (no Verão)
     - cron: '0 10 * * *'
-  
-  # Permite que cliques no botão para testar agora mesmo
   workflow_dispatch:
 
 jobs:
   pesquisar:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repositório
+      - name: Checkout repositorio
         uses: actions/checkout@v4
 
       - name: Instalar Python
@@ -20,10 +17,12 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Instalar dependências
+      - name: Instalar dependencias
         run: pip install feedparser requests beautifulsoup4
 
       - name: Correr filtro OutSystems
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: python scripts/filtrar_outsystems.py
 
       - name: Guardar resultados
